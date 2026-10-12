@@ -1,0 +1,5 @@
+Acme Corp Remote Work Policy. Employees may work remotely up to three days per week with manager approval. Core hours are 11 AM to 4 PM local time, during which employees must be reachable on Slack. Remote employees receive a home-office stipend of 500 dollars once per year, reimbursable with receipts.
+
+Acme Corp Leave Policy. Full-time employees receive 20 days of paid annual leave and 10 days of paid sick leave per year. Unused annual leave can be carried over up to 5 days into the next year. Parental leave is 16 weeks for the primary caregiver and 6 weeks for the secondary caregiver.
+
+Acme Corp Expense Policy. Business travel must be booked through the company portal. Meals during travel are reimbursed up to 40 dollars per day. Expenses above 200 dollars require prior written approval from a department head. Reimbursement is processed within 14 days of submitting receipts.
