@@ -21,23 +21,23 @@ query → embed → tenant-scoped cache lookup → candidate found?
 | Metric | Result |
 |---|---|
 | Paraphrases served from cache | 15–16 of 20 (75–80%) |
-| Spend vs always using the large model | $0.00093 vs ≈$<baseline from savings.py> (**<X>% lower**) |
+| Spend vs always using the large model | $0.00093 vs $0.00289 (**68% lower**) |
 | Verifier cost per cache hit | ≈ $0.000007 |
 | Average latency, cache hit vs miss | 462 ms vs 915 ms (single run; misses include large-model calls) |
 | Held-out test: paraphrases served | 8/10 |
 | Held-out test: wrong answers served | **0/5** adversarial near-misses |
 | Tenant isolation (`tenant_test.py`) | No cross-tenant retrieval or cache leakage |
 
-The 67% depends on the workload: this benchmark is 2/3 paraphrases by design. Routing alone saves
+The 68% depends on the workload: this benchmark is 2/3 paraphrases by design. Routing alone saves
 about 50% on routed requests, because the two model tiers differ ~2× in price.
 
 ## What I tried, and what failed
 1. **Threshold-only cache at similarity 0.88:** 1 of 20 paraphrases hit.
 2. **Loosened to 0.65:** hit rate rose to 47%, but adversarial near-misses ("primary" vs "secondary"
-   caregiver, "paid" vs "unpaid" leave) scored 0.71–0.97, *higher* than genuine paraphrases (0.67–0.95).
-   No threshold separates them: **8/8 wrong answers would be served.**
-3. **Cross-encoder verifier (Quora duplicate-question model):** accepted only 15–20% of paraphrases and
-   still let one wrong answer through. Rejected.
+   caregiver, "paid" vs "unpaid" leave) scored 0.71–0.97, overlapping the genuine paraphrases (0.57–0.95); "secondary caregiver" (0.97)
+   outscored all of them. No threshold separates them: **8/8 wrong answers would be served.**
+3. **Cross-encoder verifier (Quora duplicate-question model):** at thresholds ≤0.5 it accepted ≤20% of
+   paraphrases and still served 1/8 near-misses; at ≥0.6 it was safe but accepted only 15%. Rejected.
 4. **LLM verifier (small model, YES/NO):** 18/20 paraphrases accepted, 0/8 wrong on the dev set, then
    8/10 and 0/5 on a held-out set.
 
@@ -56,6 +56,9 @@ about 50% on routed requests, because the two model tiers differ ~2× in price.
 - The router is optimized for cost; I have not evaluated whether small-model answers are as good as large-model answers.
 - Answer quality was not measured, only cache correctness (was the *question* a true match).
 - Results varied by one paraphrase between runs (LLM verifier is not perfectly deterministic).
+- The corpus is one small synthetic policy file (3 paragraphs); retrieval quality at realistic scale is untested.
+- The verifier prompt was revised once after dev-set results (first version accepted only 35% of paraphrases),
+  so dev numbers are tuned; the held-out set was written afterward, with AI assistance, and is not fully blind.
 
 ## Run it
 ```bash

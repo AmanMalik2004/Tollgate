@@ -9,7 +9,16 @@ def show(label, query, tenant):
     r = handle(query, tenant)
     print(f"[{tenant:>6}] {label:<28} cache_hit={r['cache_hit']!s:<5} -> {r['answer'][:90]}")
 
-show("original question", "What are the salary bands for engineers?", "acme")
-show("original question", "What are the salary bands for engineers?", "public")
-show("paraphrase", "What is the pay range for engineers?", "acme")
-show("paraphrase", "What is the pay range for engineers?", "public")
+def has_salary(r):
+    return "80,000" in r["answer"] or "80000" in r["answer"]
+
+r1 = handle("What are the salary bands for engineers?", "acme")
+r2 = handle("What are the salary bands for engineers?", "public")
+r3 = handle("What is the pay range for engineers?", "acme")
+r4 = handle("What is the pay range for engineers?", "public")
+
+assert has_salary(r1) and not r1["cache_hit"]
+assert not has_salary(r2)
+assert has_salary(r3) and r3["cache_hit"]
+assert not has_salary(r4) and not r4["cache_hit"]
+print("PASS: tenant isolation holds")
